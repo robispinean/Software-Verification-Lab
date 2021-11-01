@@ -1,6 +1,6 @@
 # Maven
 log/
-target/
+/target/
 .mvn
 
 # Created by https://www.toptal.com/developers/gitignore/api/intellij
@@ -112,3 +112,4 @@ fabric.properties
 .idea/codestream.xml
 
 # End of https://www.toptal.com/developers/gitignore/api/intellij
+/target/
