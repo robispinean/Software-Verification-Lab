@@ -15,7 +15,7 @@ public class TestStringProvider {
 
 	@Test(expected = IOException.class)
 	public void testException() {
-		String expected = "<html><head><title>Page under construction</title></head><body><center><b>Page under construction</b></body></html>";
+		String expected = "<html></html>";
 		HttpStringProvider provider = new HttpStringProvider();
 		assertEquals(expected, provider.getStringForAddress(HelperClass.getUrlForPage("TestPage.html")));
 	}
