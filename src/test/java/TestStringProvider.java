@@ -1,3 +1,4 @@
+import org.junit.Rule;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -13,10 +14,10 @@ public class TestStringProvider {
 		assertEquals(expected, provider.getStringForAddress(HelperClass.getUrlForPage("TestPage.html"))); 
 	}
 
-	@Test(expected = IOException.class)
+	@Test
 	public void testException() {
 		String expected = "<html></html>";
 		HttpStringProvider provider = new HttpStringProvider();
-		assertEquals(expected, provider.getStringForAddress(HelperClass.getUrlForPage("TestPage.html")));
+		assertEquals(expected, provider.getStringForAddress(HelperClass.getUrlForPage("NotAUrl.html")));
 	}
 }
