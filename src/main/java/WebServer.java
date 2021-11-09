@@ -7,38 +7,17 @@ import utils.FileUtils;
 
 public class WebServer extends Thread {
     protected static Socket clientSocket;
-    static final int PORT = 8080;
+    static final int PORT = 8088;
 
     private FileUtils fileUtils = new FileUtils();
-    private static String STATUS = "RUNNING";
+    public static String STATUS = "STOPPED";
 
     public static void main(String[] args) throws IOException{
-        ServerSocket serverSocket = null;
         Thread CLI = new Thread(() -> CLIConfig());
         CLI.start();
-        try{
-            serverSocket = new ServerSocket(PORT);
-            System.out.println("Connection Socket Created");
-            try {
-                while (true) {
-                    System.out.println("Waiting for Connection");
-                    new WebServer(serverSocket.accept());
-                }
-            } catch (IOException e) {
-                System.err.println("Accept failed.");
-            }
-        } catch (IOException e) {
-            System.err.println("Could not listen on port: "+PORT+".");
-        } finally {
-            try {
-                serverSocket.close();
-            } catch (IOException e) {
-                System.err.println("Could not close port: "+PORT+".");
-            }
-        }
     }
 
-    private static void CLIConfig() {
+    public static void CLIConfig() {
         System.out.println("0: STOP SERVER\n" + "1: MAINTENANCE\n" + "2: RUN\n" + "3: CLOSE\n");
         System.out.println("SERVER STATUS: " + STATUS);
         Scanner input = new Scanner(System.in);
@@ -47,6 +26,7 @@ public class WebServer extends Thread {
             case "0": {
                 STATUS = "STOPPED";
                 CLIConfig();
+                break;
             }
             case "1": {
                     STATUS = "MAINTENANCE";
@@ -65,8 +45,9 @@ public class WebServer extends Thread {
     }
 
     WebServer(Socket clientSoc) throws IOException {
+        System.out.println("Status = " + STATUS);
         clientSocket = clientSoc;
-        if(STATUS.equals("RUNNING")) start();
+        if(STATUS.equals("RUNNING")) StartServer();
         if(STATUS.equals("MAINTENANCE")) Maintenance();
         if(STATUS.equals("STOPPED")) StopServer();
         if(STATUS.equals("EXIT")) ExitP();
@@ -97,6 +78,31 @@ public class WebServer extends Thread {
         }
     }
 
+    public void StartServer(){
+        System.out.println("starting server.");
+        ServerSocket serverSocket = null;
+        try{
+            serverSocket = new ServerSocket(PORT);
+            System.out.println("Connection Socket Created");
+            try {
+                while (true) {
+                    System.out.println("Waiting for Connection");
+                    new WebServer(serverSocket.accept());
+                }
+            } catch (IOException e) {
+                System.err.println("Accept failed.");
+            }
+        } catch (IOException e) {
+            System.err.println("Could not listen on port: "+PORT+".");
+        } finally {
+            try {
+                serverSocket.close();
+            } catch (IOException e) {
+                System.err.println("Could not close port: "+PORT+".");
+            }
+        }
+    }
+
     public void Maintenance(){
         System.out.println("Maintenance");
     }
@@ -105,11 +111,8 @@ public class WebServer extends Thread {
         System.out.println("Server Stopped");
     }
 
-    public void ExitP() throws IOException{
+    public int ExitP() throws IOException{
         System.out.println("Exiting program");
-    }
-
-    public static String getSTATUS() {
-        return STATUS;
+        return 0;
     }
 }
