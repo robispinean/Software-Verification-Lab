@@ -6,15 +6,25 @@ import java.util.Scanner;
 import utils.FileUtils;
 
 public class WebServer extends Thread {
-    protected static Socket clientSocket;
+    private static ServerSocket serverSocket;
+    private static Socket clientSocket;
+    //private Socket clientSocket;
     static final int PORT = 8088;
 
-    private FileUtils fileUtils = new FileUtils();
-    public static String STATUS = "STOPPED";
+    private static FileUtils fileUtils = new FileUtils();
+    private static String page = "src/main/TestSite/a.html";
+    private static String maintenancePage = "src/main/TestSite/b.html";
+
+    protected static String STATUS = "RUNNING";
 
     public static void main(String[] args) throws IOException{
+
+        WebServer webServer = null;
         Thread CLI = new Thread(() -> CLIConfig());
         CLI.start();
+
+        if(STATUS.equals("RUNNING"))
+            StartServer();
     }
 
     public static void CLIConfig() {
@@ -56,17 +66,21 @@ public class WebServer extends Thread {
     public void run() {
         System.out.println("New Communication Thread Started " + new Date());
         try {
+            PrintStream os = new PrintStream(clientSocket.getOutputStream());
             PrintWriter out = new PrintWriter(clientSocket.getOutputStream(),true);
             BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
-            String inputLine;
+            String path;
 
-            while ((inputLine = in.readLine()) != null) {
-                System.out.println("Server: " + inputLine);
-                out.println(inputLine);
-
-                if (inputLine.trim().equals(""))
-                    break;
+            while ((path = fileUtils.checkFilePath(in.readLine())) != null) {
+                File file = new File(path);
+                if(file.exists()){
+                    try {
+                        System.out.println(fileUtils.reply(os, file, (int) file.length()));
+                    } catch (Exception e) {
+                        System.out.println("Can't Read " + path);
+                    }
+                } else System.out.println("error finding file");
             }
 
             out.close();
@@ -74,18 +88,16 @@ public class WebServer extends Thread {
             clientSocket.close();
         } catch (IOException e) {
             System.err.println("Problem with Communication Server");
-            System.exit(1);
         }
     }
 
-    public void StartServer(){
+    public static void StartServer(){
         System.out.println("starting server.");
-        ServerSocket serverSocket = null;
         try{
             serverSocket = new ServerSocket(PORT);
             System.out.println("Connection Socket Created");
             try {
-                while (true) {
+                while (STATUS.equals("RUNNING")) {
                     System.out.println("Waiting for Connection");
                     new WebServer(serverSocket.accept());
                 }
@@ -101,18 +113,33 @@ public class WebServer extends Thread {
                 System.err.println("Could not close port: "+PORT+".");
             }
         }
+
     }
 
-    public void Maintenance(){
-        System.out.println("Maintenance");
+    public static void Maintenance(){
+        System.out.println("Server in Maintenance");
+        try {
+            serverSocket = new ServerSocket(8888);
+            clientSocket = serverSocket.accept();
+            PrintStream os = new PrintStream(clientSocket.getOutputStream());
+            File file = new File(maintenancePage);
+            try {
+                System.out.println(fileUtils.reply(os, file, (int) file.length()));
+            } catch (Exception e) {
+                System.err.println("Maintenance html file cannot be read.");
+            }
+            os.flush();
+            clientSocket.close();
+        } catch (IOException e) {
+            System.err.println("Problem with Communication Server");
+        }
     }
 
     public void StopServer(){
         System.out.println("Server Stopped");
     }
 
-    public int ExitP() throws IOException{
+    public void ExitP() throws IOException{
         System.out.println("Exiting program");
-        return 0;
     }
 }

@@ -1,9 +1,13 @@
 import org.junit.Test;
 import utils.FileUtils;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.Base64;
 
 public class FileUtilsTest {
@@ -58,4 +62,26 @@ public class FileUtilsTest {
         String mockedFile = "mocked.abc";
         assertEquals(null, fu.fileType(mockedFile));
     }
+
+    @Test
+    public void checkFilePathTest(){
+        FileUtils fu = new FileUtils();
+        assertEquals( "src/main/TestSite/a.html", fu.checkFilePath("GET / a.html"));
+    }
+
+    @Test
+    public void checkFilePathNullTest(){
+        FileUtils fu = new FileUtils();
+        assertNull( fu.checkFilePath("GET / HTTP/1.1"));
+    }
+
+    @Test
+    public void replyTest() throws IOException {
+        FileUtils fu = new FileUtils();
+        PrintStream os = mock(PrintStream.class);
+
+        File file = new File("src/main/TestSite/a.html");
+        assertEquals("Got the file" + file + " file type: " + "text/html" + ", length:" + 10, fu.reply(os, file, 10));
+    }
+
 }
