@@ -96,7 +96,6 @@ public class WebServer extends Thread {
                     String fileType = fileUtils.fileType(file.getName());
 
                     byte[] fileData = fileUtils.readFileByte(file);
-
                     out.println("HTTP/1.1 501 Not Implemented");
                     out.println("Date :" + new Date());
                     out.println("Type: " + fileType);

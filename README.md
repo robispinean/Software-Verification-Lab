@@ -25,5 +25,5 @@ Project for the SVV lab
 
 # [ Section 5: 3D View]
 
-![Screenshot](src/main/resources/3D View 1.PNG)
-![Screenshot](src/main/resources/3D View 2.PNG)
+![Screenshot](src/main/resources/3DView1.PNG)
+![Screenshot](src/main/resources/3DView2.PNG)
