@@ -11,7 +11,7 @@ Project for the SVV lab
   * spotbugs 1.2.5
 
 # [ Section 2: coverage ]
-![Screenshot](src/main/resources/Coverage.png)
+![Screenshot](src/main/resources/Coverage.PNG)
 
 # [ Section 3: Static analysis ]
 ![Screenshot](src/main/resources/SpotBugs.PNG)
