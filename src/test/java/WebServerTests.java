@@ -1,16 +1,13 @@
 import org.junit.Test;
-import utils.FileUtils;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 public class WebServerTests {
     WebServer webServer = null;
-    private FileUtils FileUtil = mock(FileUtils.class);
 
     @Test
     public void WebServer() throws IOException {
@@ -65,8 +62,6 @@ public class WebServerTests {
 
     @Test
     public void CliConfigTest() throws IOException {
-        webServer.STATUS = "STOPPED";
-        ServerSocket sSocket = new ServerSocket(8006);
         Socket sClient = new Socket("127.0.0.1", 8006);
         webServer = new WebServer(sClient);
         System.setIn(new ByteArrayInputStream("1\n".getBytes()));

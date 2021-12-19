@@ -24,14 +24,15 @@ public class FileUtils {
         return data;
     }
 
-    public static String reply(PrintStream os, File f, int len){
+    public static String reply(PrintWriter os, File f, int len){
         String contentType = fileType(f.toString());
         if(contentType == null) return "File type not supported";
 
-        os.print("HTTP:/1.0 200 OK\n");
+        os.print("HTTP:/1.1 200 OK\n");
         os.print("Content-type:" +  contentType + "\n");
         os.print("Content-length: "+ len +"\n");
         os.print("\n");
+        os.flush();
 
         return "Got the file" + f + " file type: " + contentType + ", length:" + len;
     }

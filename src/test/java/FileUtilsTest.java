@@ -5,10 +5,7 @@ import static org.mockito.Mockito.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.Base64;
+import java.io.PrintWriter;
 
 public class FileUtilsTest {
 
@@ -76,9 +73,9 @@ public class FileUtilsTest {
     }
 
     @Test
-    public void replyTest() throws IOException {
+    public void replyTest(){
         FileUtils fu = new FileUtils();
-        PrintStream os = mock(PrintStream.class);
+        PrintWriter os = mock(PrintWriter.class);
 
         File file = new File("src/main/TestSite/a.html");
         assertEquals("Got the file" + file + " file type: " + "text/html" + ", length:" + 10, fu.reply(os, file, 10));
