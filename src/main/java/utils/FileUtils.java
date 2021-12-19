@@ -46,12 +46,13 @@ public class FileUtils {
     }
 
     public static String checkFilePath(String fileName) {
-        if (fileName.length() == 0 || !fileName.substring(0, 3).equals("GET")) return null;
-        fileName = fileName.replace("GET / ", "");
+        if (fileName.length() == 0 || !fileName.startsWith("GET")) return null;
+        fileName = fileName.replace("GET /", "");
+        fileName = fileName.replace(" HTTP/1.1", "");
         if (fileType(fileName) != null){
-            fileName = fileName.replace(" ", "%20");
+            fileName = fileName.replace("%20", " ");
             return "src/main/TestSite/" + fileName;
         }
-        return null;
+        return "";
     }
 }

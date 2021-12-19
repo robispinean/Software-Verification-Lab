@@ -22,3 +22,8 @@ Project for the SVV lab
 ![Screenshot](src/main/resources/Dynamic1.PNG)
 ![Screenshot](src/main/resources/Dynamic2.PNG)
 ![Screenshot](src/main/resources/Dynamic3.PNG)
+
+# [ Section 5: 3D View]
+
+![Screenshot](src/main/resources/3D View 1.PNG)
+![Screenshot](src/main/resources/3D View 2.PNG)

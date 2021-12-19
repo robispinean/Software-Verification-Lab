@@ -15,7 +15,7 @@ public class WebServer extends Thread {
     public static String parent = "src/main/TestSite/";
     public static String page = "src/main/TestSite/a.html";
     public static String maintenancePage = "src/main/TestSite/b.html";
-    public static String notFound = "src/main/TestSite/a b.html";
+    public static String notFound = "src/main/TestSite/aaa/bbb/c.html";
 
     protected static String STATUS = "RUNNING";
 
@@ -64,10 +64,10 @@ public class WebServer extends Thread {
     WebServer(Socket clientSoc) throws IOException {
         System.out.println("Status = " + STATUS);
         clientSocket = clientSoc;
-        if(STATUS.equals("RUNNING")) StartServer();
+        /*if(STATUS.equals("RUNNING")) StartServer();
         if(STATUS.equals("MAINTENANCE")) Maintenance();
         if(STATUS.equals("STOPPED")) StopServer();
-        if(STATUS.equals("EXIT")) ExitP();
+        if(STATUS.equals("EXIT")) ExitP();*/
     }
 
     public void run() {
@@ -78,25 +78,67 @@ public class WebServer extends Thread {
 
         try {
             os = new BufferedOutputStream(clientSocket.getOutputStream());
-            out = new PrintWriter(clientSocket.getOutputStream(), true);
+            out = new PrintWriter(clientSocket.getOutputStream());
             in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
             String path;
             String input = in.readLine();
-            StringTokenizer parse = new StringTokenizer(input);
-            String method = parse.nextToken().toUpperCase();
-            path = parse.nextToken().toLowerCase();
+            if (input != null) {
+                StringTokenizer parse = new StringTokenizer(input);
+                String method = parse.nextToken().toUpperCase();
+                path = fileUtils.checkFilePath(input);
 
-            if (!method.equals("GET") && !method.equals("HEAD")) {
-                System.out.println("Not implemented " + method + " method.");
+                if (!method.equals("GET") && !method.equals("HEAD")) {
+                    System.out.println("Not implemented " + method + " method.");
 
+                    File file = new File(".", notFound);
+                    long fileLength = file.length();
+                    String fileType = fileUtils.fileType(file.getName());
+
+                    byte[] fileData = fileUtils.readFileByte(file);
+
+                    out.println("HTTP/1.1 501 Not Implemented");
+                    out.println("Date :" + new Date());
+                    out.println("Type: " + fileType);
+                    out.println("Length: " + fileLength);
+                    out.println();
+
+                    os.write(fileData, 0, (int) fileLength);
+                    os.flush();
+                } else {
+                    File file = null;
+                    if (path.equals("")) {
+                        path += page;
+                        file = new File(".", path);
+                    }
+                    else {
+                        file = new File(path);
+                    }
+
+                    long fileLength = file.length();
+
+                    if (method.equals("GET")) {
+                        byte[] fileData = fileUtils.readFileByte(file);
+
+                        String response = fileUtils.reply(out, file, (int) fileLength);
+
+                        os.write(fileData, 0, (int) fileLength);
+                        os.flush();
+
+                        System.out.println("Response:" + response);
+                    }
+                }
+            }
+
+        } catch (FileNotFoundException e) {
+            try {
                 File file = new File(".", notFound);
                 long fileLength = file.length();
                 String fileType = fileUtils.fileType(file.getName());
 
                 byte[] fileData = fileUtils.readFileByte(file);
 
-                out.println("HTTP/1.1 501 Not Implemented");
+                out.println("HTTP/1.1 404 Not Found");
                 out.println("Date :" + new Date());
                 out.println("Type: " + fileType);
                 out.println("Length: " + fileLength);
@@ -104,59 +146,18 @@ public class WebServer extends Thread {
 
                 os.write(fileData, 0, (int) fileLength);
                 os.flush();
-            } else {
-                File file = null;
-                if (path.endsWith("/")) {
-                    path += page;
-                    file = new File(".", path);
-                }
-                else file = new File(parent, path);
-                System.err.println("Got path: " + file.getPath());
-                long fileLength = file.length();
-
-                if (method.equals("GET")) {
-                    byte[] fileData = fileUtils.readFileByte(file);
-
-                    String response = fileUtils.reply(out, file, (int) fileLength);
-
-                    os.write(fileData, 0, (int) fileLength);
-                    os.flush();
-
-                    System.out.println("Response:" + response);
-                }
+            } catch (IOException ioe) {
+                System.err.println("Problem with FileNotFound exception: " + ioe);
             }
-
-        } catch (FileNotFoundException e) {
-                try {
-                    File file = new File(".", notFound);
-                    long fileLength = file.length();
-                    String fileType = fileUtils.fileType(file.getName());
-
-                    byte[] fileData = fileUtils.readFileByte(file);
-
-                    out.println("HTTP/1.1 404 Not Found");
-                    out.println("Date :" + new Date());
-                    out.println("Type: " + fileType);
-                    out.println("Length: " + fileLength);
-                    out.println();
-
-                    os.write(fileData, 0, (int)fileLength);
-                    os.flush();
-                } catch (IOException ioe) {
-                    System.err.println("Problem with FileNotFound exception: " + ioe);
-                }
-            }catch (IOException e) {
+        } catch (IOException e) {
             System.err.println("Problem with Communication Server: " + e);
         } finally {
             try {
                 out.close();
                 in.close();
-                clientSocket.close();
-            }catch (Exception e) {
+            } catch (Exception e) {
                 System.err.println("Error closing. " + e.getMessage());
             }
-
-            System.out.println("Connection Closed.");
         }
     }
 

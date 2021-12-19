@@ -63,13 +63,13 @@ public class FileUtilsTest {
     @Test
     public void checkFilePathTest(){
         FileUtils fu = new FileUtils();
-        assertEquals( "src/main/TestSite/a.html", fu.checkFilePath("GET / a.html"));
+        assertEquals( "src/main/TestSite/a.html", fu.checkFilePath("GET /a.html"));
     }
 
     @Test
     public void checkFilePathNullTest(){
         FileUtils fu = new FileUtils();
-        assertNull( fu.checkFilePath("GET / HTTP/1.1"));
+        assertEquals("", fu.checkFilePath("GET / HTTP/1.1"));
     }
 
     @Test
