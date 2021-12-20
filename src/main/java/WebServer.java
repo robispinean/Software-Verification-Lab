@@ -15,7 +15,7 @@ public class WebServer extends Thread {
     public static String parent = "src/main/TestSite/";
     public static String page = "src/main/TestSite/a.html";
     public static String maintenancePage = "src/main/TestSite/b.html";
-    public static String notFound = "src/main/TestSite/aaa/bbb/c.html";
+    public static String notFound = "src/main/TestSite/notFound.html";
 
     protected static String STATUS = "RUNNING";
 
@@ -58,7 +58,9 @@ public class WebServer extends Thread {
                     break;
             }
             default : CLIConfig();
+
         }
+
     }
 
     WebServer(Socket clientSoc) throws IOException {
@@ -113,6 +115,11 @@ public class WebServer extends Thread {
                         file = new File(path);
                     }
 
+                    if(!file.exists()){
+                        System.out.println("File doesn't exit");
+                        throw new FileNotFoundException();
+                    }
+
                     long fileLength = file.length();
 
                     if (method.equals("GET")) {
@@ -130,20 +137,18 @@ public class WebServer extends Thread {
 
         } catch (FileNotFoundException e) {
             try {
-                File file = new File(".", notFound);
+                File file = new File(notFound);
                 long fileLength = file.length();
-                String fileType = fileUtils.fileType(file.getName());
 
+                System.out.println("file location: " + file.getPath());
                 byte[] fileData = fileUtils.readFileByte(file);
 
-                out.println("HTTP/1.1 404 Not Found");
-                out.println("Date :" + new Date());
-                out.println("Type: " + fileType);
-                out.println("Length: " + fileLength);
-                out.println();
+                String response = fileUtils.reply(out, file, (int) fileLength);
 
                 os.write(fileData, 0, (int) fileLength);
                 os.flush();
+
+                System.out.println("Response:" + response);
             } catch (IOException ioe) {
                 System.err.println("Problem with FileNotFound exception: " + ioe);
             }
@@ -202,7 +207,6 @@ public class WebServer extends Thread {
 
     public static void StopServer(){
         System.out.println("Server Stopped");
-        System.exit(0);
     }
 
     public static void ExitP(){

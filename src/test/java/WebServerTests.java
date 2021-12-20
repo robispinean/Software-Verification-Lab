@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 public class WebServerTests {
@@ -20,12 +21,12 @@ public class WebServerTests {
     }
 
     @Test
-    public void StartServerTest() throws IOException {
-        webServer.STATUS="RUNNING";
-        ServerSocket mockServerSocket = mock(ServerSocket.class);
-        Socket mockClientSocket = mock(Socket.class);
-        webServer = new WebServer(mockClientSocket);
-        when(mockServerSocket.accept()).thenReturn(mockClientSocket);
+    public void runTest() throws IOException {
+        webServer.STATUS = "RUNNING";
+        ServerSocket sSocket = new ServerSocket(8888);
+        webServer = new WebServer(sSocket.accept());
+        webServer.run();
+        sSocket.close();
     }
 
     @Test
@@ -62,8 +63,6 @@ public class WebServerTests {
 
     @Test
     public void CliConfigTest() throws IOException {
-        Socket sClient = new Socket("127.0.0.1", 8006);
-        webServer = new WebServer(sClient);
         System.setIn(new ByteArrayInputStream("1\n".getBytes()));
         webServer.CLIConfig();
         System.setIn(new ByteArrayInputStream("2\n".getBytes()));
