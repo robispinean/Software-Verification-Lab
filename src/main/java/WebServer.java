@@ -9,7 +9,7 @@ import utils.FileUtils;
 public class WebServer extends Thread {
     private static ServerSocket serverSocket;
     private static Socket clientSocket;
-    static final int PORT = 8080;
+    static int PORT = 8080;
 
     public static FileUtils fileUtils = new FileUtils();
     public static String parent = "src/main/TestSite/";
@@ -64,10 +64,9 @@ public class WebServer extends Thread {
     WebServer(Socket clientSoc) throws IOException {
         System.out.println("Status = " + STATUS);
         clientSocket = clientSoc;
-        /*if(STATUS.equals("RUNNING")) StartServer();
         if(STATUS.equals("MAINTENANCE")) Maintenance();
         if(STATUS.equals("STOPPED")) StopServer();
-        if(STATUS.equals("EXIT")) ExitP();*/
+        if(STATUS.equals("EXIT")) ExitP();
     }
 
     public void run() {
@@ -203,6 +202,7 @@ public class WebServer extends Thread {
 
     public static void StopServer(){
         System.out.println("Server Stopped");
+        System.exit(0);
     }
 
     public static void ExitP(){
