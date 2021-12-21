@@ -1,8 +1,10 @@
 import org.junit.Test;
 
+import java.awt.*;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.URISyntaxException;
 
 import static junit.framework.TestCase.assertNotNull;
 import static org.junit.Assert.assertEquals;
@@ -37,18 +39,33 @@ public class WebServerTests {
     }
 
     @Test
-    public void runTest() throws IOException {
+    public void runTest() throws IOException, URISyntaxException {
         webServer.STATUS = "RUNNING";
-        ServerSocket sSocket = new ServerSocket(8080);
+        ServerSocket sSocket = new ServerSocket(8081);
+        Desktop d = Desktop.getDesktop();
+        d.browse(new java.net.URI("http://localhost:8081"));
         webServer = new WebServer(sSocket.accept());
         webServer.run();
     }
 
     @Test
-    public void StartServerTest() throws IOException {
+    public void runTestFileNotFound() throws IOException, URISyntaxException {
+        webServer.STATUS = "RUNNING";
+        ServerSocket sSocket = new ServerSocket(8080);
+        Desktop d = Desktop.getDesktop();
+        d.browse(new java.net.URI("http://localhost:8080/FileDoesntExit.html"));
+        webServer = new WebServer(sSocket.accept());
+        webServer.run();
+    }
+
+    @Test
+    public void StartServerTest() throws IOException, URISyntaxException {
         webServer.STATUS="RUNNING";
+        WebServer.timeout=1000;
         ServerSocket sSocket = mock(ServerSocket.class);
         when(sSocket.accept()).thenReturn(new Socket());
+        Desktop d = Desktop.getDesktop();
+        d.browse(new java.net.URI("http://localhost:8080"));
         Socket sClient = sSocket.accept();
         webServer = new WebServer(sClient);
         webServer.StartServer();

@@ -10,6 +10,7 @@ public class WebServer extends Thread {
     private static ServerSocket serverSocket;
     private static Socket clientSocket;
     static int PORT = 8080;
+    static int timeout = 100000;
 
     public static FileUtils fileUtils = new FileUtils();
     public static String parent = "src/main/TestSite/";
@@ -46,16 +47,16 @@ public class WebServer extends Thread {
                 break;
             }
             case "1": {
-                    STATUS = "MAINTENANCE";
-                    break;
+                STATUS = "MAINTENANCE";
+                break;
             }
             case "2": {
-                    STATUS ="RUNNING";
-                    break;
+                STATUS ="RUNNING";
+                break;
             }
             case "3": {
-                    STATUS = "EXIT";
-                    break;
+                STATUS = "EXIT";
+                break;
             }
             default : CLIConfig();
 
@@ -169,7 +170,7 @@ public class WebServer extends Thread {
         System.out.println("starting server.");
         try{
             serverSocket = new ServerSocket(PORT);
-            serverSocket.setSoTimeout(1000);
+            serverSocket.setSoTimeout(timeout);
             System.out.println("Connection Socket Created");
             try {
                 while (STATUS.equals("RUNNING")) {
