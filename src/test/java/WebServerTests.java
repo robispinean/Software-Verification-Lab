@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import static junit.framework.TestCase.assertNotNull;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
@@ -11,10 +12,25 @@ public class WebServerTests {
     WebServer webServer = null;
 
     @Test
+    public void testServerSocketWithSpecificPortGetsCreated() throws IOException {
+        final int testPort = 9001;
+        ServerSocket testServerSocket = new ServerSocket(testPort);
+        assertEquals(testServerSocket.getLocalPort(), testPort);
+    }
+
+    @Test
+    public void testClientSocketGetsCreated() throws IOException {
+        ServerSocket mockServerSocket = mock(ServerSocket.class);
+        when(mockServerSocket.accept()).thenReturn(new Socket());
+        Socket clientSocket = mockServerSocket.accept();
+        assertNotNull(clientSocket);
+    }
+
+    @Test
     public void WebServer() throws IOException {
-        ServerSocket sSocket = new ServerSocket(8001);
-        Socket sClient = new Socket("127.0.0.1", 8001);
-        sSocket.accept();
+        ServerSocket sSocket = mock(ServerSocket.class);
+        when(sSocket.accept()).thenReturn(new Socket());
+        Socket sClient = sSocket.accept();
         webServer = new WebServer(sClient);
         sClient.close();
         sSocket.close();
@@ -23,10 +39,20 @@ public class WebServerTests {
     @Test
     public void runTest() throws IOException {
         webServer.STATUS = "RUNNING";
-        ServerSocket sSocket = new ServerSocket(8888);
+        ServerSocket sSocket = new ServerSocket(8080);
         webServer = new WebServer(sSocket.accept());
         webServer.run();
-        sSocket.close();
+    }
+
+    @Test
+    public void StartServerTest() throws IOException {
+        webServer.STATUS="RUNNING";
+        ServerSocket sSocket = mock(ServerSocket.class);
+        when(sSocket.accept()).thenReturn(new Socket());
+        Socket sClient = sSocket.accept();
+        webServer = new WebServer(sClient);
+        webServer.StartServer();
+        when(sSocket.accept()).thenReturn(sClient);
     }
 
     @Test
@@ -69,6 +95,7 @@ public class WebServerTests {
         webServer.CLIConfig();
         System.setIn(new ByteArrayInputStream("3\n".getBytes()));
         webServer.CLIConfig();
+        System.setIn(new ByteArrayInputStream("0\n".getBytes()));
 
     }
 

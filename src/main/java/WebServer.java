@@ -65,7 +65,7 @@ public class WebServer extends Thread {
 
     WebServer(Socket clientSoc) throws IOException {
         System.out.println("Status = " + STATUS);
-        clientSocket = clientSoc;
+        if(STATUS.equals("RUNNING") || STATUS.equals("MAINTENANCE")) clientSocket = clientSoc;
         if(STATUS.equals("MAINTENANCE")) Maintenance();
         if(STATUS.equals("STOPPED")) StopServer();
         if(STATUS.equals("EXIT")) ExitP();
@@ -84,6 +84,7 @@ public class WebServer extends Thread {
 
             String path;
             String input = in.readLine();
+            System.out.println("INPUT:" + input);
             if (input != null) {
                 StringTokenizer parse = new StringTokenizer(input);
                 String method = parse.nextToken().toUpperCase();
@@ -168,6 +169,7 @@ public class WebServer extends Thread {
         System.out.println("starting server.");
         try{
             serverSocket = new ServerSocket(PORT);
+            serverSocket.setSoTimeout(1000);
             System.out.println("Connection Socket Created");
             try {
                 while (STATUS.equals("RUNNING")) {
